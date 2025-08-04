@@ -1,5 +1,7 @@
-﻿using Iyzico3DPayment.Services;
+﻿using Iyzico3DPayment.Models;
+using Iyzico3DPayment.Services;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -10,13 +12,14 @@ namespace Iyzico3DPayment.Controllers
 
 
     {
+        private readonly ApplicationDbContext _context;
         private readonly Iyzico3DPaymentService _paymentService;
 
         public PaymentController()
         {
 
 
-
+            _context = new ApplicationDbContext();
             _paymentService = new Iyzico3DPaymentService(
                 "sandbox-4VEsEh5oSCDi13KPNSzeKIIPst6MmbWc",
                 "JVksQYgQuWW3skNE8gQy8WQ8Nm5KBDe7",
@@ -34,148 +37,129 @@ namespace Iyzico3DPayment.Controllers
             return View("PaymentForm", model);
         }
 
-        public async Task<ActionResult> Init()
+
+        [HttpPost]
+        public async Task<ActionResult> Init(Iyzico3DPaymentService.Init3DPaymentRequest model)
         {
             try
             {
                 var conversationId = Guid.NewGuid().ToString();
-                Session["ConversationId"] = conversationId;
 
-
-                var request = new Iyzico3DPaymentService.Init3DPaymentRequest
+                var prePayment = new Payment
                 {
-                    conversationId = conversationId,
-                    price = 100,
-                    paidPrice = 100,
-                    currency = "TRY",
-                    basketId = "B00001234",
-                    paymentGroup = "PRODUCT",
-                    paymentChannel = "WEB",
-                    callbackUrl = "https://192.168.1.40:45455/Payment/Complete",
-                    installment = 1,
-                    paymentCard = new Iyzico3DPaymentService.PaymentCard
-                    {
-                        cardHolderName = "YAVUZ ALİ",
-                        cardNumber = "5528790000000008",
-                        expireMonth = "12",
-                        expireYear = "2030",
-                        cvc = "123"
-                    },
-                    buyer = new Iyzico3DPaymentService.Buyer
-                    {
-                        id = "BY0000012",
-                        name = "Yavuz",
-                        surname = "Ali",
-                        email = "yavuz@example.com",
-                        identityNumber = "74300864791",
-                        registrationAddress = "Yıldız Mah. Test Sok. No:1",
-                        ip = GetClientIP(),
-                        city = "Elazığ",
-                        country = "Turkey"
-                    },
-                    shippingAddress = new Iyzico3DPaymentService.Address
-                    {
-                        contactName = "Yavuz Ali",
-                        city = "Elazığ",
-                        country = "Turkey",
-                        address = "Yıldız Mah. Test Sok. No:1"
-                    },
-                    billingAddress = new Iyzico3DPaymentService.Address
-                    {
-                        contactName = "Yavuz Ali",
-                        city = "Elazığ",
-                        country = "Turkey",
-                        address = "Yıldız Mah. Test Sok. No:1"
-                    },
-                    basketItems = new[]
-                    {
-                        new Iyzico3DPaymentService.BasketItem
-                        {
-            id = "BI101",
-            name = "Ürün 1",
-            category1 = "Kategori",
-            itemType = "PHYSICAL",
-            price = 100
-        }
-    }
+                    ConversationId = conversationId,
+                    PaidAmount = model.paidPrice,
+                    InstallmentCount = model.installment,
+                    CardHolderName = model.paymentCard.cardHolderName,
+                    CardNumberMasked = MaskCardNumber(model.paymentCard.cardNumber),
+                    ExpireMonth = model.paymentCard.expireMonth,
+                    ExpireYear = model.paymentCard.expireYear,
+                    CvvHash = "***",
+                    CreatedAt = DateTime.Now,
+                    Status = "Pending"
+                };
+                _context.Payments.Add(prePayment);
+                _context.SaveChanges();
+
+                model.conversationId = conversationId;
+                model.callbackUrl = "https://localhost:44308/Payment/Complete"; // veya Url.Action(...)
+                model.currency = "TRY";
+                model.basketId = "B123456";
+                model.paymentGroup = "PRODUCT";
+                model.paymentChannel = "WEB";
+                model.buyer = new Iyzico3DPaymentService.Buyer
+                {
+                    id = "BY123",
+                    name = "Yavuz",
+                    surname = "Çarpar",
+                    email = "yavuz@example.com",
+                    identityNumber = "74300864791",
+                    registrationAddress = "Yıldız Mah. Test Sok. No:1",
+                    ip = Request.UserHostAddress,
+                    city = "Elazığ",
+                    country = "Turkey"
                 };
 
+                model.shippingAddress = new Iyzico3DPaymentService.Address
+                {
+                    contactName = "Yavuz Ali",
+                    city = "Elazığ",
+                    country = "Turkey",
+                    address = "Yıldız Mah. Test Sok. No:1"
+                };
+
+                model.billingAddress = new Iyzico3DPaymentService.Address
+                {
+                    contactName = "Yavuz Ali",
+                    city = "Elazığ",
+                    country = "Turkey",
+                    address = "Yıldız Mah. Test Sok. No:1"
+                };
+
+                model.basketItems = new Iyzico3DPaymentService.BasketItem[]
+                {
+                   new Iyzico3DPaymentService.BasketItem
+               {
+                       id = "BI101",
+                       name = "Test Ürünü",
+                       category1 = "Elektronik",
+                       itemType = "PHYSICAL",
+                       price = model.paidPrice
+                         }
+                    };
 
 
-                // Validation kontrolü
-                _paymentService.ValidateInit3DRequest(request);
 
-                var response = await _paymentService.Init3DPaymentAsync(request);
+                // Doğrulama (eksikse ekle)
+                _paymentService.ValidateInit3DRequest(model);
 
-                // Hata kontrolü
+                var response = await _paymentService.Init3DPaymentAsync(model);
+
                 if (response.status != "success")
                 {
-                    // Hata detaylarını loglayın
-                    System.Diagnostics.Debug.WriteLine($"İyzico Error: {response.errorMessage}");
-                    System.Diagnostics.Debug.WriteLine($"Error Code: {response.errorCode}");
-                    System.Diagnostics.Debug.WriteLine($"Error Group: {response.errorGroup}");
-
-                    ViewBag.Error = $"Hata: {response.errorMessage} (Kod: {response.errorCode})";
-                    ViewBag.ErrorDetails = $"Group: {response.errorGroup}";
+                    ViewBag.Error = response.errorMessage;
+                    ViewBag.ErrorCode = response.errorCode;
+                    ViewBag.ErrorGroup = response.errorGroup;
                     return View("Error");
                 }
 
-           
-                // threeDSHtmlContent'i decode et ve render et
-                if (!string.IsNullOrEmpty(response.threeDSHtmlContent))
-                {
-                    var htmlContent = System.Text.Encoding.UTF8.GetString(
-                        Convert.FromBase64String(response.threeDSHtmlContent)
-                    );
-                    return Content(htmlContent, "text/html");
-                }
-                else
-                {
-                    ViewBag.Error = "3DS HTML içeriği alınamadı";
-                    return View("Error");
-                }
+                var htmlContent = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(response.threeDSHtmlContent));
+                return Content(htmlContent, "text/html");
             }
             catch (Exception ex)
             {
-                // Exception detaylarını da loglayın
-                System.Diagnostics.Debug.WriteLine($"Exception: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
-
                 ViewBag.Error = ex.Message;
-                ViewBag.ExceptionDetails = ex.ToString();
                 return View("Error");
             }
         }
+
 
         [HttpPost]
         public async Task<ActionResult> Complete()
         {
             try
             {
-                // İyzico'dan gelen callback parametreleri
                 var status = Request.Form["status"];
                 var paymentId = Request.Form["paymentId"];
                 var conversationData = Request.Form["conversationData"];
                 var conversationId = Request.Form["conversationId"];
                 var mdStatus = Request.Form["mdStatus"];
 
-                // Hata kontrolü
                 if (status != "success" || mdStatus != "1")
                 {
-                    ViewBag.Error = "3DS doğrulama başarısız";
-                    ViewBag.Status = status;
-                    ViewBag.MdStatus = mdStatus;
+                    ViewBag.Error = "3D Secure doğrulama başarısız.";
                     return View("PaymentFailed");
                 }
 
-                // Session'dan conversationId kontrol et
-                var sessionConversationId = Session["ConversationId"]?.ToString();
-                if (string.IsNullOrEmpty(sessionConversationId) || sessionConversationId != conversationId)
+                // DB'den ödeme kaydını al
+                var payment = _context.Payments.FirstOrDefault(p => p.ConversationId == conversationId);
+                if (payment == null)
                 {
-                    ViewBag.Error = "Güvenlik hatası: Conversation ID uyuşmazlığı";
+                    ViewBag.Error = "Ödeme kaydı bulunamadı.";
                     return View("Error");
                 }
 
+                // İyzico'dan tamamla
                 var completeRequest = new Iyzico3DPaymentService.Complete3DPaymentRequest
                 {
                     locale = "tr",
@@ -186,25 +170,21 @@ namespace Iyzico3DPayment.Controllers
 
                 var result = await _paymentService.Complete3DPaymentAsync(completeRequest);
 
-                // Sonuç kontrolü
                 if (result.status == "success")
                 {
-                    // Başarılı ödeme
+                    payment.Status = "Completed";
+                    _context.SaveChanges();
+
                     ViewBag.PaymentId = result.paymentId;
                     ViewBag.Price = result.paidPrice;
-                    ViewBag.AuthCode = result.authCode;
-                    ViewBag.BasketId = result.basketId;
-
-                    // Session temizle
-                    Session.Remove("ConversationId");
-
                     return View("PaymentSuccess");
                 }
                 else
                 {
-                    // Başarısız ödeme
+                    payment.Status = "Failed";
+                    _context.SaveChanges();
+
                     ViewBag.Error = result.errorMessage;
-                    ViewBag.ErrorCode = result.errorCode;
                     return View("PaymentFailed");
                 }
             }
@@ -215,23 +195,11 @@ namespace Iyzico3DPayment.Controllers
             }
         }
 
-        // Client IP adresini almak için helper metod
-        private string GetClientIP()
+        private string MaskCardNumber(string cardNumber)
         {
-            string ip = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-            if (string.IsNullOrEmpty(ip))
-            {
-                ip = Request.ServerVariables["REMOTE_ADDR"];
-            }
-
-            // Localhost için varsayılan IP
-            if (ip == "::1" || ip == "127.0.0.1")
-            {
-                ip = "85.34.78.112"; // Test IP
-            }
-
-            return ip;
+            if (string.IsNullOrEmpty(cardNumber) || cardNumber.Length < 4)
+                return "**** **** **** ****";
+            return "**** **** **** " + cardNumber.Substring(cardNumber.Length - 4);
         }
-
     }
 }

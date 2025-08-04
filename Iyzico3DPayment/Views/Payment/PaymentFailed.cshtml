@@ -2,11 +2,17 @@
     ViewBag.Title = "Ödeme Başarısız";
 }
 
-<div class="alert alert-danger">
-    <h2>Ödeme Başarısız</h2>
-    <p><strong>Hata:</strong> @ViewBag.Error</p>
+<div class="alert alert-danger mt-4">
+    <h3>❌ Ödeme Başarısız</h3>
+    <p><strong>Hata Mesajı:</strong> @ViewBag.Error</p>
     @if (ViewBag.ErrorCode != null)
     {
         <p><strong>Hata Kodu:</strong> @ViewBag.ErrorCode</p>
     }
+    @if (ViewBag.MdStatus != null)
+    {
+        <p><strong>mdStatus:</strong> @ViewBag.MdStatus</p>
+    }
 </div>
+
+<a href="@Url.Action("Form", "Payment")" class="btn btn-warning mt-3">Tekrar Dene</a>

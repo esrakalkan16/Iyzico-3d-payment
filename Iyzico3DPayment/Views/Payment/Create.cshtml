@@ -1,0 +1,47 @@
+﻿@model Iyzico3DPayment.Models.Payment
+
+@using (Html.BeginForm("SavePayment", "Payment", FormMethod.Post))
+{
+    <div>
+        <label>Card Holder Name</label>
+        @Html.TextBoxFor(m => m.CardHolderName, new { @class = "form-control" })
+    </div>
+
+    <div>
+        <label>Card Number (Masked)</label>
+        @Html.TextBoxFor(m => m.CardNumberMasked, new { @class = "form-control" })
+    </div>
+
+    <div>
+        <label>Expire Month</label>
+        @Html.TextBoxFor(m => m.ExpireMonth, new { @class = "form-control" })
+    </div>
+
+    <div>
+        <label>Expire Year</label>
+        @Html.TextBoxFor(m => m.ExpireYear, new { @class = "form-control" })
+    </div>
+
+    <div>
+        <label>CVV (Hash)</label>
+        @Html.TextBoxFor(m => m.CvvHash, new { @class = "form-control" })
+    </div>
+
+    <div>
+        <label>Paid Amount</label>
+        @Html.TextBoxFor(m => m.PaidAmount, new { @class = "form-control" })
+    </div>
+
+    <div>
+        <label>Installment Count</label>
+        @Html.TextBoxFor(m => m.InstallmentCount, new { @class = "form-control" })
+    </div>
+
+    <div>
+        <label>Conversation Id</label>
+        @Html.TextBoxFor(m => m.ConversationId, new { @class = "form-control" })
+    </div>
+
+    <input type="submit" value="Kaydet" class="btn btn-primary" />
+}
+

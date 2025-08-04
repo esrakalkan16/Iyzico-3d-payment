@@ -2,10 +2,12 @@
     ViewBag.Title = "Ödeme Başarılı";
 }
 
-<div class="alert alert-success">
-    <h2>Ödeme Başarıyla Tamamlandı!</h2>
+<div class="alert alert-success mt-4">
+    <h3>🎉 Ödeme Başarılı!</h3>
     <p><strong>Ödeme ID:</strong> @ViewBag.PaymentId</p>
-    <p><strong>Tutar:</strong> @ViewBag.Price TL</p>
-    <p><strong>Auth Code:</strong> @ViewBag.AuthCode</p>
-    <p><strong>Sepet ID:</strong> @ViewBag.BasketId</p>
+    <p><strong>Tutar:</strong> @ViewBag.Price ₺</p>
+    <p><strong>Tarih:</strong> @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p>
 </div>
+
+<a href="@Url.Action("Form", "Payment")" class="btn btn-primary mt-3">Yeni Ödeme Yap</a>
+v>
