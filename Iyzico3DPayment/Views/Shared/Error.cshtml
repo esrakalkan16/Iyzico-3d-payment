@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "Ödeme Hatası";
+}
+
+<div class="alert alert-danger">
+    <h4>Bir Hata Oluştu</h4>
+    <p><strong>Hata:</strong> @ViewBag.Error</p>
+
+    @if (ViewBag.ErrorDetails != null)
+    {
+        <p><strong>Detay:</strong> @ViewBag.ErrorDetails</p>
+    }
+
+    @if (ViewBag.ExceptionDetails != null)
+    {
+        <details>
+            <summary>Teknik Detaylar</summary>
+            <pre>@ViewBag.ExceptionDetails</pre>
+        </details>
+    }
+</div>
+
+<a href="@Url.Action("Index", "Home")" class="btn btn-primary">Ana Sayfaya Dön</a>

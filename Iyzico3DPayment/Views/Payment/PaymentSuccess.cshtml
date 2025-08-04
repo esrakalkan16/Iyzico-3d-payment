@@ -1,0 +1,11 @@
+﻿@{
+    ViewBag.Title = "Ödeme Başarılı";
+}
+
+<div class="alert alert-success">
+    <h2>Ödeme Başarıyla Tamamlandı!</h2>
+    <p><strong>Ödeme ID:</strong> @ViewBag.PaymentId</p>
+    <p><strong>Tutar:</strong> @ViewBag.Price TL</p>
+    <p><strong>Auth Code:</strong> @ViewBag.AuthCode</p>
+    <p><strong>Sepet ID:</strong> @ViewBag.BasketId</p>
+</div>
