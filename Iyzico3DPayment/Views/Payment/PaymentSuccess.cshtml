@@ -2,12 +2,103 @@
     ViewBag.Title = "Ödeme Başarılı";
 }
 
-<div class="alert alert-success mt-4">
-    <h3>🎉 Ödeme Başarılı!</h3>
-    <p><strong>Ödeme ID:</strong> @ViewBag.PaymentId</p>
-    <p><strong>Tutar:</strong> @ViewBag.Price ₺</p>
-    <p><strong>Tarih:</strong> @DateTime.Now.ToString("dd.MM.yyyy HH:mm")</p>
-</div>
+<div class="container my-5 d-flex justify-content-center">
+    <div class="card shadow-lg p-4 w-100" style="max-width: 600px;">
+        <div class="text-center mb-4">
+            <div class="mb-3">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+            </div>
+            <h2 class="text-success mb-3">
+                <strong>✅ Ödeme Başarılı!</strong>
+            </h2>
+            <p class="text-muted">İşleminiz başarıyla tamamlandı.</p>
+        </div>
 
-<a href="@Url.Action("Form", "Payment")" class="btn btn-primary mt-3">Yeni Ödeme Yap</a>
-v>
+        <div class="bg-light rounded p-4 mb-4" style="border-left: 4px solid #28a745;">
+            <h5 class="mb-3 text-secondary">
+                <i class="bi bi-receipt me-2"></i>İşlem Detayları
+            </h5>
+
+            <div class="row">
+                <div class="col-sm-5"><strong>Ödeme ID:</strong></div>
+                <div class="col-sm-7">
+                    <span class="badge bg-primary">@(ViewBag.PaymentId ?? "N/A")</span>
+                </div>
+            </div>
+            <hr>
+
+            <div class="row">
+                <div class="col-sm-5"><strong>Ödenen Tutar:</strong></div>
+                <div class="col-sm-7">
+                    <span class="text-success fw-bold fs-4">@(ViewBag.Price ?? "0") ₺</span>
+                </div>
+            </div>
+            <hr>
+
+            <div class="row">
+                <div class="col-sm-5"><strong>İşlem Tarihi:</strong></div>
+                <div class="col-sm-7">@DateTime.Now.ToString("dd.MM.yyyy HH:mm")</div>
+            </div>
+            <hr>
+
+            <div class="row">
+                <div class="col-sm-5"><strong>Durum:</strong></div>
+                <div class="col-sm-7">
+                    <span class="badge bg-success fs-6">
+                        <i class="bi bi-check-circle me-1"></i>Başarılı
+                    </span>
+                </div>
+            </div>
+
+            @if (ViewBag.ConversationId != null)
+            {
+                <hr>
+                <div class="row">
+                    <div class="col-sm-5"><strong>İşlem No:</strong></div>
+                    <div class="col-sm-7">
+                        <small class="text-muted">@ViewBag.ConversationId</small>
+                    </div>
+                </div>
+            }
+
+            @if (ViewBag.CardMask != null)
+            {
+                <hr>
+                <div class="row">
+                    <div class="col-sm-5"><strong>Kart:</strong></div>
+                    <div class="col-sm-7">
+                        <small class="text-muted">@ViewBag.CardMask</small>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="alert alert-info mb-4">
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>📧 Bilgi:</strong> Bu işlem için size e-posta ile bilgilendirme gönderilecektir.
+        </div>
+
+        <div class="alert alert-success mb-4">
+            <i class="bi bi-shield-check me-2"></i>
+            <strong>🔒 Güvenlik:</strong> İşleminiz SSL ile şifrelenmiş ve güvenle tamamlanmıştır.
+        </div>
+
+        <div class="d-grid gap-2">
+            <a href="@Url.Action("Form", "Payment")" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle me-2"></i>Yeni Ödeme Yap
+            </a>
+            <div class="row g-2">
+                <div class="col-6">
+                    <button class="btn btn-outline-secondary w-100" onclick="window.print()">
+                        <i class="bi bi-printer me-1"></i>Yazdır
+                    </button>
+                </div>
+                <div class="col-6">
+                    <a href="/" class="btn btn-outline-info w-100">
+                        <i class="bi bi-house me-1"></i>Ana Sayfa
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

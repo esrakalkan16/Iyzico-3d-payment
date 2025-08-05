@@ -1,8 +1,100 @@
 ﻿@{
-    ViewBag.Title = "Hata";
+    ViewBag.Title = "Hata Oluştu";
 }
 
-<div class="alert alert-danger">
-    <h2>Bir Hata Oluştu</h2>
-    <p>@ViewBag.Error</p>
+<div class="container my-5 d-flex justify-content-center">
+    <div class="card shadow-lg p-4 w-100" style="max-width: 600px;">
+        <div class="text-center mb-4">
+            <div class="mb-3">
+                <i class="bi bi-x-circle-fill text-danger" style="font-size: 4rem;"></i>
+            </div>
+            <h2 class="text-danger mb-3">
+                <strong>❌ Bir Hata Oluştu</strong>
+            </h2>
+            <p class="text-muted">İşleminiz sırasında bir hata meydana geldi.</p>
+        </div>
+
+        <div class="bg-light rounded p-4 mb-4" style="border-left: 4px solid #dc3545;">
+            <h5 class="mb-3 text-secondary">
+                <i class="bi bi-exclamation-triangle me-2"></i>Hata Detayları
+            </h5>
+
+            <div class="alert alert-danger mb-3">
+                <i class="bi bi-exclamation-circle me-2"></i>
+                <strong>Hata Mesajı:</strong><br>
+                @(ViewBag.Error ?? "Bilinmeyen bir hata oluştu.")
+            </div>
+
+            @if (ViewBag.ErrorCode != null)
+            {
+                <div class="row mb-2">
+                    <div class="col-sm-4"><strong>Hata Kodu:</strong></div>
+                    <div class="col-sm-8">
+                        <span class="badge bg-danger">@ViewBag.ErrorCode</span>
+                    </div>
+                </div>
+            }
+
+            <div class="row mb-2">
+                <div class="col-sm-4"><strong>İşlem Tarihi:</strong></div>
+                <div class="col-sm-8">@DateTime.Now.ToString("dd.MM.yyyy HH:mm")</div>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <h6 class="text-secondary mb-3">
+                <i class="bi bi-lightbulb me-2"></i> Yardımcı Olabilecek Bilgiler:
+            </h6>
+
+            <div class="accordion" id="accordionHelp">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading1">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                             3D Secure Sorunu
+                        </button>
+                    </h2>
+                    <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#accordionHelp">
+                        <div class="accordion-body">
+                            • 3D Secure doğrulama adımını doğru tamamladığınızdan emin olun.<br>
+                            • SMS ile gelen kodu doğru girdiğinizden emin olun.<br>
+                            • Kartınızın 3D Secure özelliği aktif olmalı.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading2">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                             Kart Bilgileri Sorunu
+                        </button>
+                    </h2>
+                    <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#accordionHelp">
+                        <div class="accordion-body">
+                            • Kart numaranızı, son kullanma tarihi ve CVC kodunu kontrol edin.<br>
+                            • Kartınız internet alışverişlerine açık mı kontrol edin.<br>
+                            • Kartınızda yeterli bakiye bulunmalı.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <a href="@Url.Action("Form", "Payment")" class="btn btn-warning btn-lg">
+                <i class="bi bi-arrow-clockwise me-2"></i> Tekrar Dene
+            </a>
+            <div class="row g-2 mt-2">
+                <div class="col-6">
+                    <a href="mailto:destek@example.com" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-envelope me-1"></i> Destek
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="/" class="btn btn-outline-info w-100">
+                        <i class="bi bi-house me-1"></i> Ana Sayfa
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

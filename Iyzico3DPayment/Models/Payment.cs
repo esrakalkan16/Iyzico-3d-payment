@@ -14,6 +14,9 @@ namespace Iyzico3DPayment.Models
         [Required]
         public string ConversationId { get; set; }
 
+        [MaxLength(100)]
+        public string PaymentId { get; set; } // İyzico'dan dönen payment ID'si - YENİ
+
         [Required]
         [Range(0.01, double.MaxValue)]
         public decimal PaidAmount { get; set; }
@@ -37,7 +40,16 @@ namespace Iyzico3DPayment.Models
 
         public string Status { get; set; } = "Pending";
 
+        public bool IsSuccess { get; set; }
+
+        public string ErrorMessage { get; set; }
+
+        [MaxLength(50)]
+        public string ErrorCode { get; set; } // İyzico hata kodu - YENİ
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public DateTime? CompletedAt { get; set; } // Tamamlanma tarihi - YENİ
 
         public int? ApiConfigurationId { get; set; }
 

@@ -170,6 +170,14 @@
     <Compile Include="Migrations\202508041347320_InitialCreate.Designer.cs">
       <DependentUpon>202508041347320_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202508050618127_AddIsSuccessAndErrorMessageToPayments.cs" />
+    <Compile Include="Migrations\202508050618127_AddIsSuccessAndErrorMessageToPayments.Designer.cs">
+      <DependentUpon>202508050618127_AddIsSuccessAndErrorMessageToPayments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202508050718161_AddPaymentIdCompletedAtErrorCode.cs" />
+    <Compile Include="Migrations\202508050718161_AddPaymentIdCompletedAtErrorCode.Designer.cs">
+      <DependentUpon>202508050718161_AddPaymentIdCompletedAtErrorCode.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApiConfiguration.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -267,6 +275,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202508041347320_InitialCreate.resx">
       <DependentUpon>202508041347320_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508050618127_AddIsSuccessAndErrorMessageToPayments.resx">
+      <DependentUpon>202508050618127_AddIsSuccessAndErrorMessageToPayments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508050718161_AddPaymentIdCompletedAtErrorCode.resx">
+      <DependentUpon>202508050718161_AddPaymentIdCompletedAtErrorCode.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
